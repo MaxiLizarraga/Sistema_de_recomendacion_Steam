@@ -186,6 +186,7 @@ def developer_reviews_analysis (developer: str):
 
 #---------------------------------------modelo de machine learning----------------------------------------------------
 
+@app.get("/recommend_games/{item_id}")
 def recomendacion_juegov2(item_id:int):
     
     tabla_modelo_item = pd.read_parquet("./Datasets_endpoints/recommend_item_item.parquet")
