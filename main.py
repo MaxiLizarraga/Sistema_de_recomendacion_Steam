@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 from fastapi.responses import HTMLResponse
 from sklearn.metrics.pairwise import cosine_similarity
-# import random as r
+import random as r
 
 #----------------------------------- Mensaje de Bienvenida -------------------------------------------------
 app = FastAPI()
@@ -187,10 +187,9 @@ def developer_reviews_analysis (developer: str):
 #---------------------------------------modelo de machine learning----------------------------------------------------
 
 @app.get("/recommend_games/{item_id}")
-def recomendacion_juegov2(item_id:int):
+def recomendacion_juego(item_id:int):
     
     tabla_modelo_item = pd.read_parquet("./Datasets_endpoints/recommend_item_item.parquet")
-    
     
     juego_seleccionado = tabla_modelo_item[tabla_modelo_item["item_id"] == item_id]
     juego_seleccionado
@@ -203,7 +202,11 @@ def recomendacion_juegov2(item_id:int):
     similitud_score = cosine_similarity(juego_seleccionado,dataframe_para_similitud)
 
     # limitamos
-    indices_recomendados = np.argsort(similitud_score)[0][::-1][1:6]
 
-    juegos_recomendados = list(tabla_modelo_item.loc[indices_recomendados]["app_name"])
-    return juegos_recomendados
+    indices_recomendados = np.where(similitud_score == 1.0)
+    indices_recomendados = indices_recomendados[1][indices_recomendados[1] != juego_seleccionado.index[0]]
+    indices_recomendados_aleatorio = r.sample(list(indices_recomendados),5)
+
+    juegos_recomendados = tabla_modelo_item.loc[indices_recomendados_aleatorio][["app_name","developer","Valoración"]]
+    lista_juegos_recomendados = [f"{nombre} - {desarrollador}" for nombre, desarrollador in zip(juegos_recomendados['app_name'], juegos_recomendados['developer'])]
+    return lista_juegos_recomendados
