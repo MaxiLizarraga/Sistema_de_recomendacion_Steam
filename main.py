@@ -1,11 +1,14 @@
 
-## hacemos la importacion de librerias a utilizar
+#------------------------------ Importacion de librerias a utilizar ----------------------------------------
 
 from fastapi import FastAPI
 import pandas as pd
+import numpy as np
 from fastapi.responses import HTMLResponse
+from sklearn.metrics.pairwise import cosine_similarity
+import random as r
 
-## cargamos los archivos que vamos a utilizar
+#----------------------------- cargamos los archivos que vamos a utilizar ----------------------------------
 
 # tabla de la primera consulta
 tabla_developer = pd.read_parquet("./Datasets_endpoints/endpoint_Developer.parquet")
@@ -19,6 +22,10 @@ tabla_userforgenre = pd.read_parquet("./Datasets_endpoints/enpoint_userforgenre.
 # tabla de la cuarta y quinta consulta
 tabla_user_reviews_sentiments = pd.read_parquet("./Datasets_endpoints/endpoint_games_reviews.parquet")
 
+# tabla de Modelo de recomendación item-item
+tabla_modelo_item = pd.read_parquet("./Datasets_endpoints/recommend_item_item.parquet")
+
+#----------------------------------- Mensaje de Bienvenida -------------------------------------------------
 app = FastAPI()
 
 #hacemos un testeo de funcionamiento de la api
@@ -26,7 +33,7 @@ app = FastAPI()
 def mensaje():
     return "Testeo Primera Api"
 
-# ------------------------------------- Funciones Extras----------------------------------------------------
+# ------------------------------------- Funciones Extras ---------------------------------------------------
 # funcion para normalizar price
 def str_to_float(value):
     try:
@@ -41,31 +48,33 @@ def str_to_float(value):
 
 @app.get("/developer/{desarrollador}",response_class=HTMLResponse)
 def developer(desarrollador: str):
-        #primer paso normalizamos str ingresado a minuscula, para evitar conflictos
-        desarrolador_normalizado = desarrollador.lower()
+    """es5to es una prueba de descripcion
+    """
+    #primer paso normalizamos str ingresado a minuscula, para evitar conflictos
+    desarrolador_normalizado = desarrollador.lower()
         
         #hacemos el filtrado por developer
-        developer_filtrado = tabla_developer[tabla_developer["developer"] == desarrolador_normalizado]
+    developer_filtrado = tabla_developer[tabla_developer["developer"] == desarrolador_normalizado]
         
         # establecemos la condicion de que si el developer que se ingresó tiene la tabla vacia, significa que no existe ese developer
-        if developer_filtrado.empty:
+    if developer_filtrado.empty:
             return "No existe ese Developer"
-        else:
+    else:
             # ahora procedemos a hacer la agrupacion de los developer por año y calculamos la cantidad de items por año y la cantidad de productos gratis por año
             # lo ordenamos de manera descendiente y reseteamos el index
-            Developer_muestra = tabla_developer[tabla_developer["developer"] == desarrolador_normalizado].groupby(["año"]).agg(
-            Cantidad_de_Items=("item_id" ,"count"),
-            Contenido_Free=("price",lambda x: (x=='free').sum())
-            ).sort_values(by="año",ascending=False).reset_index()
+        Developer_muestra = tabla_developer[tabla_developer["developer"] == desarrolador_normalizado].groupby(["año"]).agg(
+        Cantidad_de_Items=("item_id" ,"count"),
+        Contenido_Free=("price",lambda x: (x=='free').sum())
+        ).sort_values(by="año",ascending=False).reset_index()
             
             # posteriormente calculamos el porcentaje de juegos gratis por año, lo convertimos en entero para redondearlo mejor y finalmente lo convertimos en string para agregarle
             # el signo de porcentaje
-            Developer_muestra["Contenido_Free"] = round((Developer_muestra["Contenido_Free"] / Developer_muestra["Cantidad_de_Items"]* 100)).astype(int)
-            Developer_muestra["Contenido_Free"] = Developer_muestra["Contenido_Free"].astype(str) + '%'
+    Developer_muestra["Contenido_Free"] = round((Developer_muestra["Contenido_Free"] / Developer_muestra["Cantidad_de_Items"]* 100)).astype(int)
+    Developer_muestra["Contenido_Free"] = Developer_muestra["Contenido_Free"].astype(str) + '%'
             
-            #Finalmente convertimos el dataframe en un HTML
-            Developer_muestra = Developer_muestra.to_html(index=False)
-            return Developer_muestra
+    #Finalmente convertimos el dataframe en un HTML
+    Developer_muestra = Developer_muestra.to_html(index=False)
+    return Developer_muestra
         
 
 # Segunda Consulta
@@ -73,34 +82,37 @@ def developer(desarrollador: str):
 @app.get("/userdata/{user_id}")
 def userdata(user_id:str):
     # hacemos el filtrado de usuario,luego convertimos la columna de price en float y los que son textos o nulos lo convertimos en 0
-    user_filtrado = tabla_userdata[tabla_userdata["user_id"] == user_id]
+    user_filtrado = user_id.lower()
+    tabla_userdata_filtrado = tabla_userdata[tabla_userdata["user_id"] == user_filtrado]
     
     # hacemos la condicion de que exista ese usuario
-    if user_filtrado.empty:
-        return "El usuario ingresado es incorrecto"
+    if tabla_userdata_filtrado.empty:
+        return "No está el usuario ingresado"
+    
     else:
-     user_filtrado["price"] = user_filtrado["price"].apply(str_to_float)
+     tabla_userdata_filtrado["price"] = tabla_userdata_filtrado["price"].apply(str_to_float)
     
      # agrupamos por usuario
      # -calculamos la sumatoria del dinero gastado
-     # -la sumatoria de las buenas recomendaciones 
+     # -contamos las buenas recomendaciones 
      # -conteo de los items del usuario
-     user_filtrado = user_filtrado.groupby("user_id").agg(
+     tabla_userdata_filtrado = tabla_userdata_filtrado.groupby("user_id").agg(
         Dinero_Gastado = ("price","sum"),
-        total_recomendaciones_buenas = ("recommend","sum"),
-        total_recomendaciones = ("recommend","count"),
+        total_recomendaciones_buenas = ("recommend","count"),
         cantidad_de_items = ("item_id","count")
         ).reset_index()
     
      # posteriormente hacemos el calculo de porcentaje de recomendación
-     user_filtrado["%_de_recomendacion"] = round(user_filtrado["total_recomendaciones_buenas"] /user_filtrado["total_recomendaciones"] * 100).astype(int)
-     user_filtrado["%_de_recomendacion"] = user_filtrado["%_de_recomendacion"].astype(str) + "%"
-
+     tabla_userdata_filtrado["%_de_recomendacion"] = round(tabla_userdata_filtrado["total_recomendaciones_buenas"] /tabla_userdata_filtrado["cantidad_de_items"] * 100).astype(int)
+     tabla_userdata_filtrado["%_de_recomendacion"] = tabla_userdata_filtrado["%_de_recomendacion"].astype(str) + "%"
+     tabla_userdata_filtrado["Dinero_Gastado"] = str(tabla_userdata_filtrado.loc[0,"Dinero_Gastado"]) + " USD"
+     
      # por ultimo detalles borramos las columnas que no nos sirven, reenombramos el user_id a usuario y lo convertimos en diccionario
-     user_filtrado.drop(["total_recomendaciones_buenas","total_recomendaciones"],axis=1,inplace=True)
-     user_filtrado.rename(columns={"user_id":"Usuario"},inplace=True)
-     user_filtrado = user_filtrado.to_dict(orient="records")[0]
-     return user_filtrado
+     tabla_userdata_filtrado.drop(["total_recomendaciones_buenas"],axis=1,inplace=True)
+     tabla_userdata_filtrado.rename(columns={"user_id":"Usuario"},inplace=True)
+     tabla_userdata_filtrado = tabla_userdata_filtrado.to_dict(orient="records")[0]
+     
+     return tabla_userdata_filtrado
 
 # Tercera Consulta
 
@@ -156,18 +168,53 @@ def best_developer_year(year: int):
 
 # Quinta Consulta
 
-@app.get("/developer_revires_analysis/{developer}:")
+@app.get("/developer_revires_analysis/{developer}")
 def developer_reviews_analysis (developer: str):
+    # Normalizamos el dato a minuscula para evitar confictos en la busqueda
     dev_normalizado = developer.lower()
+    
+    #ahora filtramos por developer y lo agrupamos por el mismo, y hacemos los calculos de la cantidad de comentarios positivos y negativos
     dev_reseñas = tabla_user_reviews_sentiments[tabla_user_reviews_sentiments["developer"] == dev_normalizado].groupby("developer").agg(
     Positivos = ("sentiment_analysis",lambda x: (x == 2).sum()),
-    negativos = ("sentiment_analysis",lambda x: (x == 0).sum())
+    Negativos = ("sentiment_analysis",lambda x: (x == 0).sum())
 ).reset_index()
+    
+    #hacemos una condicional de si la tabla está vacia 
     if dev_reseñas.empty:
         return "No existe el developer ingresado"
     else:
+        #borramos la columna developer y guardamos el numero de los comentarios y positivos en variables
         tabla_salida = dev_reseñas.drop("developer",axis=1)
-        tabla_salida = tabla_salida.to_dict(orient="records")
-
-        salida_final = {f"{developer}":tabla_salida}
+        salida_positivo = str(tabla_salida["Positivos"][0])
+        salida_negativo = str(tabla_salida["Negativos"][0])
+        # finalmente devolvemos un diccionario con la key del developer y como valor una lista de los comentarios positivos y negativos
+        salida_final = {f"{developer}":["positivos:"+ salida_positivo , "negativos:" + salida_negativo]}
         return salida_final
+    
+    
+    
+    #---------------------------------- Modelo de Recomendacion Item-Item------------------------------------------------------
+
+@app.get("/recommend_game/{item_id}")
+def recomendacion_juego(item_id:int):
+    juego_seleccionado = tabla_modelo_item[tabla_modelo_item["item_id"] == item_id]
+    juego_seleccionado
+    if juego_seleccionado.empty:
+        return "No existe ese item en la lista"
+    # limpiamos las columnas que no vamos a usar
+    juego_seleccionado = juego_seleccionado.drop(["item_id","app_name","developer","año","juegos_vendidos","Valoración"],axis=1)
+    dataframe_para_similitud = tabla_modelo_item.drop(["item_id","app_name","developer","año","juegos_vendidos","Valoración"],axis=1)
+    # hacemos el calculo de coseno de similitud
+    similitud_score = cosine_similarity(juego_seleccionado,dataframe_para_similitud)
+
+    # limitamos
+
+    indices_recomendados = np.where(similitud_score == 1.0)
+    indices_recomendados = indices_recomendados[1][indices_recomendados[1] != juego_seleccionado.index[0]]
+    indices_recomendados_aleatorio = r.sample(list(indices_recomendados),5)
+
+    juegos_recomendados = tabla_modelo_item.loc[indices_recomendados_aleatorio][["app_name","developer","Valoración"]]
+    lista_juegos_recomendados = [f"{nombre} - {desarrollador}" for nombre, desarrollador in zip(juegos_recomendados['app_name'], juegos_recomendados['developer'])]
+    return lista_juegos_recomendados
+    
+    
