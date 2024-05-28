@@ -127,7 +127,7 @@ def userdata(user_id:str):
 def userforgenre(genero: str):
     """
     * **Parámetros**: Recibe el género y devuelve una lista donde contiene:
-    * Usuario
+    * Usuario con mas horas jugadas en ese género
     * Año
     * Sumatoria de horas jugadas por año
     
