@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 from fastapi.responses import HTMLResponse
 from sklearn.metrics.pairwise import cosine_similarity
-import random
+# import random
 
 #----------------------------- cargamos los archivos que vamos a utilizar ----------------------------------
 
@@ -195,9 +195,33 @@ def developer_reviews_analysis (developer: str):
     
     #---------------------------------- Modelo de Recomendacion Item-Item------------------------------------------------------
 
-@app.get("/recommend_game/{item_id}")
-def recomendacion_juego(item_id:int):
-    juego_seleccionado = tabla_modelo_item[tabla_modelo_item["item_id"] == item_id]
+# @app.get("/recommend_game/{item_id}")
+# def recomendacion_juego(item_id:int):
+#     juego_seleccionado = tabla_modelo_item[tabla_modelo_item["item_id"] == item_id]
+#     juego_seleccionado
+#     if juego_seleccionado.empty:
+#         return "No existe ese item en la lista"
+#     # limpiamos las columnas que no vamos a usar
+#     juego_seleccionado = juego_seleccionado.drop(["item_id","app_name","developer","año","juegos_vendidos","Valoración"],axis=1)
+#     dataframe_para_similitud = tabla_modelo_item.drop(["item_id","app_name","developer","año","juegos_vendidos","Valoración"],axis=1)
+#     # hacemos el calculo de coseno de similitud
+#     similitud_score = cosine_similarity(juego_seleccionado,dataframe_para_similitud)
+
+#     # limitamos
+
+#     indices_recomendados = np.where(similitud_score == 1.0)
+#     indices_recomendados = indices_recomendados[1][indices_recomendados[1] != juego_seleccionado.index[0]]
+#     indices_recomendados_aleatorio = random.sample(list(indices_recomendados),5)
+
+#     juegos_recomendados = tabla_modelo_item.loc[indices_recomendados_aleatorio][["app_name","developer","Valoración"]]
+#     lista_juegos_recomendados = [f"{nombre} - {desarrollador}" for nombre, desarrollador in zip(juegos_recomendados['app_name'], juegos_recomendados['developer'])]
+#     return lista_juegos_recomendados
+
+
+#modelo de prueba 2
+@app.get("/recommend_game/{id_juego}")  
+def recomendacion_juegov2(id_juego:int):
+    juego_seleccionado = tabla_modelo_item[tabla_modelo_item["item_id"] == id_juego]
     juego_seleccionado
     if juego_seleccionado.empty:
         return "No existe ese item en la lista"
@@ -208,13 +232,7 @@ def recomendacion_juego(item_id:int):
     similitud_score = cosine_similarity(juego_seleccionado,dataframe_para_similitud)
 
     # limitamos
+    indices_recomendados = np.argsort(similitud_score)[0][::-1][1:6]
 
-    indices_recomendados = np.where(similitud_score == 1.0)
-    indices_recomendados = indices_recomendados[1][indices_recomendados[1] != juego_seleccionado.index[0]]
-    indices_recomendados_aleatorio = random.sample(list(indices_recomendados),5)
-
-    juegos_recomendados = tabla_modelo_item.loc[indices_recomendados_aleatorio][["app_name","developer","Valoración"]]
-    lista_juegos_recomendados = [f"{nombre} - {desarrollador}" for nombre, desarrollador in zip(juegos_recomendados['app_name'], juegos_recomendados['developer'])]
-    return lista_juegos_recomendados
-    
-    
+    juegos_recomendados = list(tabla_modelo_item.loc[indices_recomendados]["app_name"])
+    return juegos_recomendados
