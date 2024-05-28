@@ -13,9 +13,6 @@ import random as r
 # Tabla consulta 2
 tabla_userdata = pd.read_parquet("./Datasets_endpoints/endpoint_userdata.parquet")
 
-# Tabla consulta 3
-tabla_userforgenre = pd.read_parquet("./Datasets_endpoints/enpoint_userforgenre.parquet")
-
 #----------------------------------- Mensaje de Bienvenida -------------------------------------------------
 app = FastAPI()
 
@@ -113,7 +110,8 @@ def userdata(user_id:str):
 
 @app.get("/userforgenre/{genero}")
 def userforgenre(genero: str):
-    
+    # Tabla consulta 3
+    tabla_userforgenre = pd.read_parquet("./Datasets_endpoints/enpoint_userforgenre.parquet")
     # Normalizamos a minuscula el genero ingresado
     genre_normalizado = genero.lower()
 
