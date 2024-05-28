@@ -10,6 +10,9 @@ import random as r
 
 #----------------------------------- Carga de archivos------------------------------------------------------
 
+# Tabla consulta 2
+tabla_userdata = pd.read_parquet("./Datasets_endpoints/endpoint_userdata.parquet")
+
 # Tabla consulta 3
 tabla_userforgenre = pd.read_parquet("./Datasets_endpoints/enpoint_userforgenre.parquet")
 
@@ -72,9 +75,6 @@ def developer(desarrollador: str):
 
 @app.get("/userdata/{user_id}")
 def userdata(user_id:str):
-    
-    # Tabla consulta 2
-    tabla_userdata = pd.read_parquet("./Datasets_endpoints/endpoint_userdata.parquet")
     
     # hacemos el filtrado de usuario,luego convertimos la columna de price en float y los que son textos o nulos lo convertimos en 0
     user_filtrado = user_id.lower()
