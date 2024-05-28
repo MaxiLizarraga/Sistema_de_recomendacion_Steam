@@ -168,7 +168,7 @@ def best_developer_year(year: int):
 
 # Quinta Consulta
 
-@app.get("/developer_revires_analysis/{developer}")
+@app.get("/developer_reviews_analysis/{developer}")
 def developer_reviews_analysis (developer: str):
     # Normalizamos el dato a minuscula para evitar confictos en la busqueda
     dev_normalizado = developer.lower()
