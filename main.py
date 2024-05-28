@@ -9,11 +9,9 @@ from sklearn.metrics.pairwise import cosine_similarity
 import random as r
 
 #----------------------------------- Carga de archivos------------------------------------------------------
-# Tabla consulta 1
-tabla_developer = pd.read_parquet("./Datasets_endpoints/endpoint_Developer.parquet")
 
-# Tabla consulta 2
-tabla_userdata = pd.read_parquet("./Datasets_endpoints/endpoint_userdata.parquet")
+# Tabla consulta 3
+tabla_userforgenre = pd.read_parquet("./Datasets_endpoints/enpoint_userforgenre.parquet")
 
 # Tabla consulta 4 y 5
 tabla_user_reviews_sentiments = pd.read_parquet("./Datasets_endpoints/endpoint_games_reviews.parquet")
@@ -42,8 +40,11 @@ def str_to_float(value):
 
 @app.get("/developer/{desarrollador}",response_class=HTMLResponse)
 def developer(desarrollador: str):
-    """es5to es una prueba de descripcion
+    """esto es una prueba de descripcion
     """
+    # Tabla consulta 1
+    tabla_developer = pd.read_parquet("./Datasets_endpoints/endpoint_Developer.parquet")
+    
     #primer paso normalizamos str ingresado a minuscula, para evitar conflictos
     desarrolador_normalizado = desarrollador.lower()
         
@@ -75,6 +76,9 @@ def developer(desarrollador: str):
 
 @app.get("/userdata/{user_id}")
 def userdata(user_id:str):
+    
+    # Tabla consulta 2
+    tabla_userdata = pd.read_parquet("./Datasets_endpoints/endpoint_userdata.parquet")
     
     # hacemos el filtrado de usuario,luego convertimos la columna de price en float y los que son textos o nulos lo convertimos en 0
     user_filtrado = user_id.lower()
@@ -114,7 +118,6 @@ def userdata(user_id:str):
 @app.get("/userforgenre/{genero}")
 def userforgenre(genero: str):
     
-    tabla_userforgenre = pd.read_parquet("./Datasets_endpoints/enpoint_userforgenre.parquet")
     # Normalizamos a minuscula el genero ingresado
     genre_normalizado = genero.lower()
 
