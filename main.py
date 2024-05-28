@@ -8,6 +8,17 @@ from fastapi.responses import HTMLResponse
 from sklearn.metrics.pairwise import cosine_similarity
 import random as r
 
+#----------------------------------- Carga de archivos------------------------------------------------------
+# Tabla consulta 1
+tabla_developer = pd.read_parquet("./Datasets_endpoints/endpoint_Developer.parquet")
+
+# Tabla consulta 2
+tabla_userdata = pd.read_parquet("./Datasets_endpoints/endpoint_userdata.parquet")
+
+# Tabla consulta 4 y 5
+tabla_user_reviews_sentiments = pd.read_parquet("./Datasets_endpoints/endpoint_games_reviews.parquet")
+
+
 #----------------------------------- Mensaje de Bienvenida -------------------------------------------------
 app = FastAPI()
 
@@ -33,8 +44,6 @@ def str_to_float(value):
 def developer(desarrollador: str):
     """es5to es una prueba de descripcion
     """
-    
-    tabla_developer = pd.read_parquet("./Datasets_endpoints/endpoint_Developer.parquet")
     #primer paso normalizamos str ingresado a minuscula, para evitar conflictos
     desarrolador_normalizado = desarrollador.lower()
         
@@ -67,7 +76,6 @@ def developer(desarrollador: str):
 @app.get("/userdata/{user_id}")
 def userdata(user_id:str):
     
-    tabla_userdata = pd.read_parquet("./Datasets_endpoints/endpoint_userdata.parquet")
     # hacemos el filtrado de usuario,luego convertimos la columna de price en float y los que son textos o nulos lo convertimos en 0
     user_filtrado = user_id.lower()
     tabla_userdata_filtrado = tabla_userdata[tabla_userdata["user_id"] == user_filtrado]
@@ -137,7 +145,6 @@ def userforgenre(genero: str):
 @app.get("/best_developer_year/{year}")
 def best_developer_year(year: int):
     
-    tabla_user_reviews_sentiments = pd.read_parquet("./Datasets_endpoints/endpoint_games_reviews.parquet")
     # Hacemos el filtrado de año y agrupamos por developer, calculamos el total de comentarios positivos y sentimientos positivos,y lo ordenamos de descendiente
     Filtro_año = tabla_user_reviews_sentiments[tabla_user_reviews_sentiments["año"] == year].groupby("developer").agg(
     comentarios_positivos = ("recommend",'sum'),
@@ -161,7 +168,6 @@ def best_developer_year(year: int):
 @app.get("/developer_reviews_analysis/{developer}")
 def developer_reviews_analysis (developer: str):
     
-    tabla_user_reviews_sentiments = pd.read_parquet("./Datasets_endpoints/endpoint_games_reviews.parquet")
     # Normalizamos el dato a minuscula para evitar confictos en la busqueda
     dev_normalizado = developer.lower()
     
