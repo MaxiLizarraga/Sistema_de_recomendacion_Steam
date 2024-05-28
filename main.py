@@ -5,23 +5,8 @@ from fastapi import FastAPI
 import pandas as pd
 import numpy as np
 from fastapi.responses import HTMLResponse
-
-#----------------------------- cargamos los archivos que vamos a utilizar ----------------------------------
-
-# tabla de la primera consulta
-tabla_developer = pd.read_parquet("./Datasets_endpoints/endpoint_Developer.parquet")
-
-# tabla de la segunda consulta
-tabla_userdata = pd.read_parquet("./Datasets_endpoints/endpoint_userdata.parquet")
-
-# tabla de la tercera consulta
-tabla_userforgenre = pd.read_parquet("./Datasets_endpoints/enpoint_userforgenre.parquet")
-
-# tabla de la cuarta y quinta consulta
-tabla_user_reviews_sentiments = pd.read_parquet("./Datasets_endpoints/endpoint_games_reviews.parquet")
-
-# tabla de Modelo de recomendación item-item
-tabla_modelo_item = pd.read_parquet("./Datasets_endpoints/recommend_item_item.parquet")
+from sklearn.metrics.pairwise import cosine_similarity
+# import random as r
 
 #----------------------------------- Mensaje de Bienvenida -------------------------------------------------
 app = FastAPI()
@@ -48,6 +33,8 @@ def str_to_float(value):
 def developer(desarrollador: str):
     """es5to es una prueba de descripcion
     """
+    
+    tabla_developer = pd.read_parquet("./Datasets_endpoints/endpoint_Developer.parquet")
     #primer paso normalizamos str ingresado a minuscula, para evitar conflictos
     desarrolador_normalizado = desarrollador.lower()
         
@@ -79,6 +66,8 @@ def developer(desarrollador: str):
 
 @app.get("/userdata/{user_id}")
 def userdata(user_id:str):
+    
+    tabla_userdata = pd.read_parquet("./Datasets_endpoints/endpoint_userdata.parquet")
     # hacemos el filtrado de usuario,luego convertimos la columna de price en float y los que son textos o nulos lo convertimos en 0
     user_filtrado = user_id.lower()
     tabla_userdata_filtrado = tabla_userdata[tabla_userdata["user_id"] == user_filtrado]
@@ -116,6 +105,8 @@ def userdata(user_id:str):
 
 @app.get("/userforgenre/{genero}")
 def userforgenre(genero: str):
+    
+    tabla_userforgenre = pd.read_parquet("./Datasets_endpoints/enpoint_userforgenre.parquet")
     # Normalizamos a minuscula el genero ingresado
     genre_normalizado = genero.lower()
 
@@ -146,6 +137,7 @@ def userforgenre(genero: str):
 @app.get("/best_developer_year/{year}")
 def best_developer_year(year: int):
     
+    tabla_user_reviews_sentiments = pd.read_parquet("./Datasets_endpoints/endpoint_games_reviews.parquet")
     # Hacemos el filtrado de año y agrupamos por developer, calculamos el total de comentarios positivos y sentimientos positivos,y lo ordenamos de descendiente
     Filtro_año = tabla_user_reviews_sentiments[tabla_user_reviews_sentiments["año"] == year].groupby("developer").agg(
     comentarios_positivos = ("recommend",'sum'),
@@ -168,6 +160,8 @@ def best_developer_year(year: int):
 
 @app.get("/developer_reviews_analysis/{developer}")
 def developer_reviews_analysis (developer: str):
+    
+    tabla_user_reviews_sentiments = pd.read_parquet("./Datasets_endpoints/endpoint_games_reviews.parquet")
     # Normalizamos el dato a minuscula para evitar confictos en la busqueda
     dev_normalizado = developer.lower()
     
@@ -188,3 +182,27 @@ def developer_reviews_analysis (developer: str):
         # finalmente devolvemos un diccionario con la key del developer y como valor una lista de los comentarios positivos y negativos
         salida_final = {f"{developer}":["positivos:"+ salida_positivo , "negativos:" + salida_negativo]}
         return salida_final
+
+
+#---------------------------------------modelo de machine learning----------------------------------------------------
+
+def recomendacion_juegov2(item_id:int):
+    
+    tabla_modelo_item = pd.read_parquet("./Datasets_endpoints/recommend_item_item.parquet")
+    
+    
+    juego_seleccionado = tabla_modelo_item[tabla_modelo_item["item_id"] == item_id]
+    juego_seleccionado
+    if juego_seleccionado.empty:
+        return "No existe ese item en la lista"
+    # limpiamos las columnas que no vamos a usar
+    juego_seleccionado = juego_seleccionado.drop(["item_id","app_name","developer","año","juegos_vendidos","Valoración"],axis=1)
+    dataframe_para_similitud = tabla_modelo_item.drop(["item_id","app_name","developer","año","juegos_vendidos","Valoración"],axis=1)
+    # hacemos el calculo de coseno de similitud
+    similitud_score = cosine_similarity(juego_seleccionado,dataframe_para_similitud)
+
+    # limitamos
+    indices_recomendados = np.argsort(similitud_score)[0][::-1][1:6]
+
+    juegos_recomendados = list(tabla_modelo_item.loc[indices_recomendados]["app_name"])
+    return juegos_recomendados
