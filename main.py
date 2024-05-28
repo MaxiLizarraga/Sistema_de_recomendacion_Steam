@@ -13,10 +13,6 @@ import random as r
 # Tabla consulta 3
 tabla_userforgenre = pd.read_parquet("./Datasets_endpoints/enpoint_userforgenre.parquet")
 
-# Tabla consulta 4 y 5
-tabla_user_reviews_sentiments = pd.read_parquet("./Datasets_endpoints/endpoint_games_reviews.parquet")
-
-
 #----------------------------------- Mensaje de Bienvenida -------------------------------------------------
 app = FastAPI()
 
@@ -148,6 +144,7 @@ def userforgenre(genero: str):
 @app.get("/best_developer_year/{year}")
 def best_developer_year(year: int):
     
+    tabla_user_reviews_sentiments = pd.read_parquet("./Datasets_endpoints/endpoint_games_reviews.parquet")
     # Hacemos el filtrado de año y agrupamos por developer, calculamos el total de comentarios positivos y sentimientos positivos,y lo ordenamos de descendiente
     Filtro_año = tabla_user_reviews_sentiments[tabla_user_reviews_sentiments["año"] == year].groupby("developer").agg(
     comentarios_positivos = ("recommend",'sum'),
@@ -171,6 +168,7 @@ def best_developer_year(year: int):
 @app.get("/developer_reviews_analysis/{developer}")
 def developer_reviews_analysis (developer: str):
     
+    tabla_user_reviews_sentiments = pd.read_parquet("./Datasets_endpoints/endpoint_games_reviews.parquet")
     # Normalizamos el dato a minuscula para evitar confictos en la busqueda
     dev_normalizado = developer.lower()
     
