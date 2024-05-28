@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 from fastapi.responses import HTMLResponse
 from sklearn.metrics.pairwise import cosine_similarity
-import random as r
+import random
 
 #----------------------------- cargamos los archivos que vamos a utilizar ----------------------------------
 
@@ -211,7 +211,7 @@ def recomendacion_juego(item_id:int):
 
     indices_recomendados = np.where(similitud_score == 1.0)
     indices_recomendados = indices_recomendados[1][indices_recomendados[1] != juego_seleccionado.index[0]]
-    indices_recomendados_aleatorio = r.sample(list(indices_recomendados),5)
+    indices_recomendados_aleatorio = random.sample(list(indices_recomendados),5)
 
     juegos_recomendados = tabla_modelo_item.loc[indices_recomendados_aleatorio][["app_name","developer","Valoración"]]
     lista_juegos_recomendados = [f"{nombre} - {desarrollador}" for nombre, desarrollador in zip(juegos_recomendados['app_name'], juegos_recomendados['developer'])]
