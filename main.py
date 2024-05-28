@@ -118,12 +118,12 @@ def userforgenre(genero: str):
     # Filtramos por el genero ingresado y agrupamos por usuarios para sacar las horas totales que le dedicó 
     filtroGenre =tabla_userforgenre[(tabla_userforgenre["genre"] == genre_normalizado)].groupby(["user_id"]).agg(
     Horas_Jugadas_Totales = ("playtime_forever","sum")
-    ).reset_index()
+    ).sort_values(by="Horas_Jugadas_Totales",ascending=False).reset_index()
     if filtroGenre.empty:
         return f"No existe el género {genre_normalizado}"
     else:
      # sacamos al usuario con el mayor de horas dedicadas a el genero filtrado
-     usuario_con_mas_horas = filtroGenre.loc[filtroGenre["Horas_Jugadas_Totales"].idxmax(),"user_id"]
+     usuario_con_mas_horas = filtroGenre.loc[0,"user_id"]
 
      # ahora filtramos por ese usuario y genero, lo agrupamos por año y hacemos que calcule las horas por año, y finalizando convierte las horas en enteros
      Consulta_Final = tabla_userforgenre[(tabla_userforgenre["genre"] == genre_normalizado) & (tabla_userforgenre["user_id"] == usuario_con_mas_horas)].groupby(["año"]).agg(
