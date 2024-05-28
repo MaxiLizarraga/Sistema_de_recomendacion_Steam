@@ -8,6 +8,21 @@ from fastapi.responses import HTMLResponse
 from sklearn.metrics.pairwise import cosine_similarity
 # import random
 
+#-------------------------------------------error a solucionar--------------------------------------------
+import os
+
+app = FastAPI()
+
+@app.get("/")
+def read_root():
+    return {"Hello": "World"}
+
+if __name__ == "__main__":
+    port = int(os.getenv("PORT", 8000))
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=port)
+
+
 #----------------------------- cargamos los archivos que vamos a utilizar ----------------------------------
 
 # tabla de la primera consulta
@@ -22,16 +37,13 @@ tabla_userforgenre = pd.read_parquet("./Datasets_endpoints/enpoint_userforgenre.
 # tabla de la cuarta y quinta consulta
 tabla_user_reviews_sentiments = pd.read_parquet("./Datasets_endpoints/endpoint_games_reviews.parquet")
 
-# tabla de Modelo de recomendación item-item
-tabla_modelo_item = pd.read_parquet("./Datasets_endpoints/recommend_item_item.parquet")
-
 #----------------------------------- Mensaje de Bienvenida -------------------------------------------------
-app = FastAPI()
+# app = FastAPI()
 
-#hacemos un testeo de funcionamiento de la api
-@app.get("/")
-def mensaje():
-    return "Testeo Primera Api"
+# # #hacemos un testeo de funcionamiento de la api
+# # @app.get("/")
+# # def mensaje():
+# #     return "Testeo Primera Api"
 
 # ------------------------------------- Funciones Extras ---------------------------------------------------
 # funcion para normalizar price
@@ -195,32 +207,14 @@ def developer_reviews_analysis (developer: str):
     
     #---------------------------------- Modelo de Recomendacion Item-Item------------------------------------------------------
 
-# @app.get("/recommend_game/{item_id}")
-# def recomendacion_juego(item_id:int):
-#     juego_seleccionado = tabla_modelo_item[tabla_modelo_item["item_id"] == item_id]
-#     juego_seleccionado
-#     if juego_seleccionado.empty:
-#         return "No existe ese item en la lista"
-#     # limpiamos las columnas que no vamos a usar
-#     juego_seleccionado = juego_seleccionado.drop(["item_id","app_name","developer","año","juegos_vendidos","Valoración"],axis=1)
-#     dataframe_para_similitud = tabla_modelo_item.drop(["item_id","app_name","developer","año","juegos_vendidos","Valoración"],axis=1)
-#     # hacemos el calculo de coseno de similitud
-#     similitud_score = cosine_similarity(juego_seleccionado,dataframe_para_similitud)
-
-#     # limitamos
-
-#     indices_recomendados = np.where(similitud_score == 1.0)
-#     indices_recomendados = indices_recomendados[1][indices_recomendados[1] != juego_seleccionado.index[0]]
-#     indices_recomendados_aleatorio = random.sample(list(indices_recomendados),5)
-
-#     juegos_recomendados = tabla_modelo_item.loc[indices_recomendados_aleatorio][["app_name","developer","Valoración"]]
-#     lista_juegos_recomendados = [f"{nombre} - {desarrollador}" for nombre, desarrollador in zip(juegos_recomendados['app_name'], juegos_recomendados['developer'])]
-#     return lista_juegos_recomendados
-
-
 #modelo de prueba 2
 @app.get("/recommend_game/{id_juego}")  
 def recomendacion_juegov2(id_juego:int):
+    
+    # llamamos al archivo solamente cuando se llama a la funcion
+    # tabla de Modelo de recomendación item-item
+    tabla_modelo_item = pd.read_parquet("./Datasets_endpoints/recommend_item_item.parquet")
+    
     juego_seleccionado = tabla_modelo_item[tabla_modelo_item["item_id"] == id_juego]
     juego_seleccionado
     if juego_seleccionado.empty:
