@@ -5,8 +5,6 @@ from fastapi import FastAPI
 import pandas as pd
 import numpy as np
 from fastapi.responses import HTMLResponse
-from sklearn.metrics.pairwise import cosine_similarity
-# import random
 
 #----------------------------- cargamos los archivos que vamos a utilizar ----------------------------------
 
@@ -190,7 +188,3 @@ def developer_reviews_analysis (developer: str):
         # finalmente devolvemos un diccionario con la key del developer y como valor una lista de los comentarios positivos y negativos
         salida_final = {f"{developer}":["positivos:"+ salida_positivo , "negativos:" + salida_negativo]}
         return salida_final
-    
-    
-    
-    #---------------------------------- Modelo de Recomendacion Item-Item------------------------------------------------------
