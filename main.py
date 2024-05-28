@@ -36,7 +36,12 @@ def str_to_float(value):
 
 @app.get("/developer/{desarrollador}",response_class=HTMLResponse)
 def developer(desarrollador: str):
-    """esto es una prueba de descripcion
+    """
+    * **Parámetros**: Recibe el nombre del desarrollador y devuelve una tabla HTML por año donde contiene:
+    * Total Productos
+    * Porcentaje de Productos Gratis
+    
+    * **ejemplos de parámetros**: Valve,Capcom,Monster Games
     """
     # Tabla consulta 1
     tabla_developer = pd.read_parquet("./Datasets_endpoints/endpoint_Developer.parquet")
@@ -72,6 +77,15 @@ def developer(desarrollador: str):
 
 @app.get("/userdata/{user_id}")
 def userdata(user_id:str):
+    """
+    * **Parámetros**: Recibe el nombre del usuario y devuelve un diccionario donde contiene:
+    * Usuario
+    * Total de Dinero Gastado en USD
+    * Cantidad de Productos
+    * Porcentaje de Recomendación
+    
+    * **ejemplos de parámetros**: --000-- , echoxsilence , i_did_911_just_saying
+    """
     
     # hacemos el filtrado de usuario,luego convertimos la columna de price en float y los que son textos o nulos lo convertimos en 0
     user_filtrado = user_id.lower()
@@ -109,7 +123,16 @@ def userdata(user_id:str):
 # Tercera Consulta
 
 @app.get("/userforgenre/{genero}")
+
 def userforgenre(genero: str):
+    """
+    * **Parámetros**: Recibe el género y devuelve una lista donde contiene:
+    * Usuario
+    * Año
+    * Sumatoria de horas jugadas por año
+    
+    * **ejemplos de parámetros**: Action, Indie, Casual
+    """
     # Tabla consulta 3
     tabla_userforgenre = pd.read_parquet("./Datasets_endpoints/enpoint_userforgenre.parquet")
     # Normalizamos a minuscula el genero ingresado
@@ -141,7 +164,13 @@ def userforgenre(genero: str):
  # Cuarta Consulta
 @app.get("/best_developer_year/{year}")
 def best_developer_year(year: int):
+    """
+    * **Parámetros**: Recibe el año y devuelve el TOP 3 de ese año en una lista donde contiene:
+    * puesto
+    * desarrollador 
     
+    * **ejemplos de parámetros**: 2000, 2017, 2003
+    """
     tabla_user_reviews_sentiments = pd.read_parquet("./Datasets_endpoints/endpoint_games_reviews.parquet")
     # Hacemos el filtrado de año y agrupamos por developer, calculamos el total de comentarios positivos y sentimientos positivos,y lo ordenamos de descendiente
     Filtro_año = tabla_user_reviews_sentiments[tabla_user_reviews_sentiments["año"] == year].groupby("developer").agg(
@@ -165,7 +194,13 @@ def best_developer_year(year: int):
 
 @app.get("/developer_reviews_analysis/{developer}")
 def developer_reviews_analysis (developer: str):
+    """
+    * **Parámetros**: Recibe el desarrollador y devuelve un diccionario con una lista de valor donde contiene:
+    * desarrollador como Key
+    * Cantidad de comentarios positivos y negativos 
     
+    * **ejemplos de parámetros**: 2000, 2017, 2003
+    """
     tabla_user_reviews_sentiments = pd.read_parquet("./Datasets_endpoints/endpoint_games_reviews.parquet")
     # Normalizamos el dato a minuscula para evitar confictos en la busqueda
     dev_normalizado = developer.lower()
@@ -193,7 +228,13 @@ def developer_reviews_analysis (developer: str):
 
 @app.get("/recommend_games/{item_id}")
 def recomendacion_juego(item_id:int):
+    """
+    * **Parámetros**: Recibe el id del item y devuelve una lista de 5 juegos recomendados donde contiene:
+    * Nombre del juego
+    * desarrollador 
     
+    * **ejemplos de parámetros**: 10, 2028056, 2028103
+    """
     tabla_modelo_item = pd.read_parquet("./Datasets_endpoints/recommend_item_item.parquet")
     
     juego_seleccionado = tabla_modelo_item[tabla_modelo_item["item_id"] == item_id]
