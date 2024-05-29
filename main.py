@@ -205,7 +205,7 @@ def developer_reviews_analysis (Desarrollador: str):
     * desarrollador como Key
     * Cantidad de comentarios positivos y negativos 
     
-    * **ejemplos de parámetros**: Capcom, Valve, 
+    * **ejemplos de parámetros**: Capcom, Valve
     """
     tabla_user_reviews_sentiments = pd.read_parquet("./Datasets_endpoints/endpoint_games_reviews.parquet")
     # Normalizamos el dato a minuscula para evitar confictos en la busqueda
@@ -226,7 +226,7 @@ def developer_reviews_analysis (Desarrollador: str):
         salida_positivo = str(tabla_salida["Positivos"][0])
         salida_negativo = str(tabla_salida["Negativos"][0])
         # finalmente devolvemos un diccionario con la key del developer y como valor una lista de los comentarios positivos y negativos
-        salida_final = {f"{developer}":["positivos:"+ salida_positivo , "negativos:" + salida_negativo]}
+        salida_final = {f"{Desarrollador}":["positivos:"+ salida_positivo , "negativos:" + salida_negativo]}
         return salida_final
 
 
