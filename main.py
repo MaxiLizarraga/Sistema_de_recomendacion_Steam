@@ -201,7 +201,7 @@ def developer_reviews_analysis (developer: str):
     * desarrollador como Key
     * Cantidad de comentarios positivos y negativos 
     
-    * **ejemplos de parámetros**: 2000, 2017, 2003
+    * **ejemplos de parámetros**: Capcom, Valve, 
     """
     tabla_user_reviews_sentiments = pd.read_parquet("./Datasets_endpoints/endpoint_games_reviews.parquet")
     # Normalizamos el dato a minuscula para evitar confictos en la busqueda
@@ -285,7 +285,7 @@ def recomendacion_usuario(usuario:str):
 
     usuarios_gustos_similares = np.where(similitud > 0.8)
     indices_recomendados = usuarios_gustos_similares[1][usuarios_gustos_similares[1] != usuario_gustos.index[0]]
-    indices_recomendados_aleatorio = r.sample(list(indices_recomendados),6)
+    indices_recomendados_aleatorio = r.sample(list(indices_recomendados),7)
 
     juegos_recomendados = tabla_modelo_usuarios.loc[indices_recomendados_aleatorio][["item_id"]].reset_index(drop=True).drop_duplicates()
     juegos_recomendados = pd.merge(juegos_recomendados,tabla_modelo_item,on="item_id")
