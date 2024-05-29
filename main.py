@@ -12,7 +12,11 @@ import random as r
 
 # Tabla consulta 2
 tabla_userdata = pd.read_parquet("./Datasets_endpoints/endpoint_userdata.parquet")
+
+# tabla modelo item-item
 tabla_modelo_usuarios = pd.read_parquet("./Datasets_endpoints/recommend_usuario_item.parquet")
+
+# tabla modelo usuario-item
 tabla_modelo_item = pd.read_parquet("./Datasets_endpoints/recommend_item_item.parquet")
 
 #----------------------------------- Mensaje de Bienvenida -------------------------------------------------
@@ -195,7 +199,7 @@ def best_developer_year(year: int):
 # Quinta Consulta
 
 @app.get("/developer_reviews_analysis/{developer}")
-def developer_reviews_analysis (developer: str):
+def developer_reviews_analysis (Desarrollador: str):
     """
     * **Parámetros**: Recibe el desarrollador y devuelve un diccionario con una lista de valor donde contiene:
     * desarrollador como Key
@@ -205,7 +209,7 @@ def developer_reviews_analysis (developer: str):
     """
     tabla_user_reviews_sentiments = pd.read_parquet("./Datasets_endpoints/endpoint_games_reviews.parquet")
     # Normalizamos el dato a minuscula para evitar confictos en la busqueda
-    dev_normalizado = developer.lower()
+    dev_normalizado = Desarrollador.lower()
     
     #ahora filtramos por developer y lo agrupamos por el mismo, y hacemos los calculos de la cantidad de comentarios positivos y negativos
     dev_reseñas = tabla_user_reviews_sentiments[tabla_user_reviews_sentiments["developer"] == dev_normalizado].groupby("developer").agg(
@@ -234,7 +238,6 @@ def recomendacion_juego(item_id:int):
     """
     * **Parámetros**: Recibe el id del item y devuelve una lista de 5 juegos recomendados donde contiene:
     * Nombre del juego
-    * desarrollador 
     
     * **ejemplos de parámetros**: 10, 2028056, 2028103
     """
@@ -248,14 +251,14 @@ def recomendacion_juego(item_id:int):
     # hacemos el calculo de coseno de similitud
     similitud_score = cosine_similarity(juego_seleccionado,dataframe_para_similitud)
 
-    # limitamos
-
+    # limitamos por precision en la similitud y devolvemos una lista random de 5 juegos
     indices_recomendados = np.where(similitud_score == 1.0)
     indices_recomendados = indices_recomendados[1][indices_recomendados[1] != juego_seleccionado.index[0]]
     indices_recomendados_aleatorio = r.sample(list(indices_recomendados),5)
 
-    juegos_recomendados = tabla_modelo_item.loc[indices_recomendados_aleatorio][["app_name","developer","Valoración"]]
-    lista_juegos_recomendados = [f"{nombre} - {desarrollador}" for nombre, desarrollador in zip(juegos_recomendados['app_name'], juegos_recomendados['developer'])]
+    # ya teniendo los indices aleatorios se llama y muestra
+    juegos_recomendados = tabla_modelo_item.loc[indices_recomendados_aleatorio][["app_name"]]
+    lista_juegos_recomendados = juegos_recomendados["app_name"].to_list()
     return lista_juegos_recomendados
 
 #modelo de recomendacion USUARIO-ITEM
