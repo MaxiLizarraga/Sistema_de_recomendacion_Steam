@@ -68,6 +68,7 @@ En este proyecto, desarrollaremos una API de consultas que será implementada en
 - ![Matplotlib](https://img.shields.io/badge/-Matplotlib-333333?style=flat&logo=matplotlib)
 - ![Seaborn](https://img.shields.io/badge/-Seaborn-333333?style=flat&logo=seaborn)
 - ![FastAPI](https://img.shields.io/badge/-FastAPI-333333?style=flat&logo=fastapi)
+
 **Machine Learning** 
 - ![Scikitlearn](https://img.shields.io/badge/scikit--learn-333333?style=flat&logo=scikit-learn)
 - ![Scikitlearn](https://img.shields.io/badge/NLTK-333333?style=flat&logo=nltk)
