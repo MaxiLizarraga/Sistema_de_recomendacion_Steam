@@ -12,6 +12,8 @@ import random as r
 
 # Tabla consulta 2
 tabla_userdata = pd.read_parquet("./Datasets_endpoints/endpoint_userdata.parquet")
+tabla_modelo_usuarios = pd.read_parquet("./Datasets_endpoints/recommend_usuario_item.parquet")
+tabla_modelo_item = pd.read_parquet("./Datasets_endpoints/recommend_item_item.parquet")
 
 #----------------------------------- Mensaje de Bienvenida -------------------------------------------------
 app = FastAPI()
@@ -225,6 +227,7 @@ def developer_reviews_analysis (developer: str):
 
 
 #---------------------------------------modelo de machine learning----------------------------------------------------
+#modelo de recomendacion ITEM-ITEM
 
 @app.get("/recommend_games/{item_id}")
 def recomendacion_juego(item_id:int):
@@ -235,8 +238,6 @@ def recomendacion_juego(item_id:int):
     
     * **ejemplos de parámetros**: 10, 2028056, 2028103
     """
-    tabla_modelo_item = pd.read_parquet("./Datasets_endpoints/recommend_item_item.parquet")
-    
     juego_seleccionado = tabla_modelo_item[tabla_modelo_item["item_id"] == item_id]
     juego_seleccionado
     if juego_seleccionado.empty:
@@ -256,3 +257,38 @@ def recomendacion_juego(item_id:int):
     juegos_recomendados = tabla_modelo_item.loc[indices_recomendados_aleatorio][["app_name","developer","Valoración"]]
     lista_juegos_recomendados = [f"{nombre} - {desarrollador}" for nombre, desarrollador in zip(juegos_recomendados['app_name'], juegos_recomendados['developer'])]
     return lista_juegos_recomendados
+
+#modelo de recomendacion USUARIO-ITEM
+@app.get("/user_recommend/{user}")
+def recomendacion_usuario(usuario:str):
+    """
+    * **Parámetros**: Recibe el id del usuario y devuelve una lista de 5 juegos recomendados donde contiene:
+    * Nombre del juego
+    
+    * **ejemplos de parámetros**: --000-- , echoxsilence , i_did_911_just_saying
+    """
+    usuario_seleccionado = usuario.lower()
+    usuario_seleccionado = tabla_modelo_usuarios[tabla_modelo_usuarios["user_id"] == usuario_seleccionado]
+    if usuario_seleccionado.empty:
+        return "No se encontró al usuario"
+
+    usuario_gustos = usuario_seleccionado.drop(["item_id"],axis=1)
+    df_para_similitud = tabla_modelo_usuarios.drop(["item_id"],axis=1)
+
+    usuario_gustos = usuario_gustos.groupby("user_id").max().reset_index()
+    df_para_similitud = df_para_similitud.groupby("user_id").max().reset_index()
+
+    usuario_gustos = usuario_gustos.drop(["user_id"],axis=1)
+    df_para_similitud = df_para_similitud.drop(["user_id"],axis=1)
+
+    similitud = cosine_similarity(usuario_gustos,df_para_similitud)
+
+    usuarios_gustos_similares = np.where(similitud > 0.8)
+    indices_recomendados = usuarios_gustos_similares[1][usuarios_gustos_similares[1] != usuario_gustos.index[0]]
+    indices_recomendados_aleatorio = r.sample(list(indices_recomendados),6)
+
+    juegos_recomendados = tabla_modelo_usuarios.loc[indices_recomendados_aleatorio][["item_id"]].reset_index(drop=True).drop_duplicates()
+    juegos_recomendados = pd.merge(juegos_recomendados,tabla_modelo_item,on="item_id")
+    juegos_recomendados = juegos_recomendados["app_name"][:5].to_list()
+
+    return juegos_recomendados
