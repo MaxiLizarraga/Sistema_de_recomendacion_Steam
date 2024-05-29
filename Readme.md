@@ -4,7 +4,7 @@
 **Descripción**:
 En este proyecto, desarrollaremos una API de consultas que será implementada en Render. Además, crearemos un modelo de recomendación basado en relaciones de item-item y usuario-item. Todo esto se realizará para la empresa multinacional Steam.
 
-[!steam](https://i.blogs.es/a34507/steam/1366_521.jpg)
+![image](https://i.blogs.es/a34507/steam/1366_521.jpg)
 
 **Objetivos**:
 1. Implementar una API de consultas en Render para permitir el acceso a datos y funcionalidades específicas.
