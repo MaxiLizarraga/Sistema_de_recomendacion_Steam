@@ -198,7 +198,7 @@ def best_developer_year(year: int):
 
 # Quinta Consulta
 
-@app.get("/developer_reviews_analysis/{developer}")
+@app.get("/developer_reviews_analysis/{desarrollador}")
 def developer_reviews_analysis (Desarrollador: str):
     """
     * **Parámetros**: Recibe el desarrollador y devuelve un diccionario con una lista de valor donde contiene:
