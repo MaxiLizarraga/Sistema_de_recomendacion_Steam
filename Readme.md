@@ -59,18 +59,18 @@ En este proyecto, desarrollaremos una API de consultas que será implementada en
 
 ## Tecnologias Utilizadas
 
-**Manipulación de Datos:** 
+**Manipulación de Datos** 
 - ![Pandas](https://img.shields.io/badge/-Pandas-333333?style=flat&logo=pandas)
 - ![Numpy](https://img.shields.io/badge/-Numpy-333333?style=flat&logo=numpy)
 
-**Visualización:** 
-- ![Renderizar](https://img.shields.io/badge/-Render-333333?style=flat&logo=render)
+**Visualización** 
 - ![Matplotlib](https://img.shields.io/badge/-Matplotlib-333333?style=flat&logo=matplotlib)
 - ![Seaborn](https://img.shields.io/badge/-Seaborn-333333?style=flat&logo=seaborn)
-- ![FastAPI](https://img.shields.io/badge/-FastAPI-333333?style=flat&logo=fastapi)
 
 **Machine Learning** 
 - ![Scikitlearn](https://img.shields.io/badge/scikit--learn-333333?style=flat&logo=scikit-learn)
 - ![Scikitlearn](https://img.shields.io/badge/NLTK-333333?style=flat&logo=nltk)
 
-
+**Despliegue de aplicaciones**
+- ![Renderizar](https://img.shields.io/badge/-Render-333333?style=flat&logo=render)
+- ![FastAPI](https://img.shields.io/badge/-FastAPI-333333?style=flat&logo=fastapi)
