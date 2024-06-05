@@ -1,15 +1,12 @@
 
 # PI MLOps: Modelo de recomendación
 
-**Descripción**:
-En este proyecto, desarrollaremos una API de consultas que será implementada en Render. Además, crearemos un modelo de recomendación basado en relaciones de item-item y usuario-item. Todo esto se realizará para la empresa multinacional Steam.
-
-![image](Proyecto finales Individuales/Proyecto Individual 1/_src\steam.jpg)
-
 **Objetivos**:
 1. Implementar una API de consultas en Render para permitir el acceso a datos y funcionalidades específicas.
 2. Construir un modelo de recomendación utilizando relaciones de item-item y usuario-item para ofrecer recomendaciones personalizadas a los usuarios de Steam.
 3. Trabajar con archivos JSON comprimidos proporcionados por Steam, que pueden contener datos anidados y faltantes, así como otras dificultades, que resolveremos mediante procesos de Extracción, Transformación y Carga (ETL) y Análisis Exploratorio de Datos (EDA).
+
+<img src="_src/steam.jpg">
 
 ## API Referencias
 
@@ -26,7 +23,7 @@ En este proyecto, desarrollaremos una API de consultas que será implementada en
 ```http
   GET /userdata/{user_id}
 ```
-| Parametro | Formato     | Descripción                       |
+| Parameter | Type     | Description                       |
 | :-------- | :------- | :-------------------------------- |
 | `usuario`      | `string` | Recibe el nombre del usuario |
 
@@ -35,7 +32,7 @@ En este proyecto, desarrollaremos una API de consultas que será implementada en
   GET /userforgenre/{genero}
 ```
 
-| Parametro | Formato     | Descripción                       |
+| Parameter | Type     | Description                       |
 | :-------- | :------- | :-------------------------------- |
 | `genero`      | `string` | Recibe el nombre del genero |
 
@@ -44,7 +41,7 @@ En este proyecto, desarrollaremos una API de consultas que será implementada en
   GET /best_developer_year/{year}
 ```
 
-| Parametro | Formato     | Descripción                       |
+| Parameter | Type     | Description                       |
 | :-------- | :------- | :-------------------------------- |
 | `year`      | `int` | Recibe el numero del año |
 
@@ -53,7 +50,7 @@ En este proyecto, desarrollaremos una API de consultas que será implementada en
   GET /developer_reviews_analysis/{Desarrollador}
 ```
 
-| Parametro | Formato     | Descripción                       |
+| Parameter | Type     | Description                       |
 | :-------- | :------- | :-------------------------------- |
 | `Desarrollador`      | `string` | recibe el nombre del desarrollador |
 
