@@ -4,7 +4,7 @@
 **Descripción**:
 En este proyecto, desarrollaremos una API de consultas que será implementada en Render. Además, crearemos un modelo de recomendación basado en relaciones de item-item y usuario-item. Todo esto se realizará para la empresa multinacional Steam.
 
-![image](./_src/steam.jpg)
+![image](Proyecto finales Individuales/Proyecto Individual 1/_src\steam.jpg)
 
 **Objetivos**:
 1. Implementar una API de consultas en Render para permitir el acceso a datos y funcionalidades específicas.
@@ -26,7 +26,7 @@ En este proyecto, desarrollaremos una API de consultas que será implementada en
 ```http
   GET /userdata/{user_id}
 ```
-| Parameter | Type     | Description                       |
+| Parametro | Formato     | Descripción                       |
 | :-------- | :------- | :-------------------------------- |
 | `usuario`      | `string` | Recibe el nombre del usuario |
 
@@ -35,7 +35,7 @@ En este proyecto, desarrollaremos una API de consultas que será implementada en
   GET /userforgenre/{genero}
 ```
 
-| Parameter | Type     | Description                       |
+| Parametro | Formato     | Descripción                       |
 | :-------- | :------- | :-------------------------------- |
 | `genero`      | `string` | Recibe el nombre del genero |
 
@@ -44,7 +44,7 @@ En este proyecto, desarrollaremos una API de consultas que será implementada en
   GET /best_developer_year/{year}
 ```
 
-| Parameter | Type     | Description                       |
+| Parametro | Formato     | Descripción                       |
 | :-------- | :------- | :-------------------------------- |
 | `year`      | `int` | Recibe el numero del año |
 
@@ -53,7 +53,7 @@ En este proyecto, desarrollaremos una API de consultas que será implementada en
   GET /developer_reviews_analysis/{Desarrollador}
 ```
 
-| Parameter | Type     | Description                       |
+| Parametro | Formato     | Descripción                       |
 | :-------- | :------- | :-------------------------------- |
 | `Desarrollador`      | `string` | recibe el nombre del desarrollador |
 
