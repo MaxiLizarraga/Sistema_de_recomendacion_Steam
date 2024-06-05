@@ -4,7 +4,7 @@
 **Descripción**:
 En este proyecto, desarrollaremos una API de consultas que será implementada en Render. Además, crearemos un modelo de recomendación basado en relaciones de item-item y usuario-item. Todo esto se realizará para la empresa multinacional Steam.
 
-![image](Proyecto finales Individuales/Proyecto Individual 1/_src\steam.jpg)
+![image](./_src/steam.jpg)
 
 **Objetivos**:
 1. Implementar una API de consultas en Render para permitir el acceso a datos y funcionalidades específicas.
@@ -76,3 +76,12 @@ En este proyecto, desarrollaremos una API de consultas que será implementada en
 **Despliegue de aplicaciones**
 - ![Renderizar](https://img.shields.io/badge/-Render-333333?style=flat&logo=render)
 - ![FastAPI](https://img.shields.io/badge/-FastAPI-333333?style=flat&logo=fastapi)
+
+# Contacto
+
+Puedes contactarme a través de los siguientes medios:
+
+| [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/maxi-lizarraga)|[![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/MaxiLizarraga) | | 
+| --- | --- | --- |
+
+### Email : maxijavierlizarraga@outlook.com
