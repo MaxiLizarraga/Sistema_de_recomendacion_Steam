@@ -1,4 +1,3 @@
-
 #------------------------------ Importacion de librerias a utilizar ----------------------------------------
 
 from fastapi import FastAPI
