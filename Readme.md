@@ -6,8 +6,6 @@
 2. Construir un modelo de recomendación utilizando relaciones de item-item y usuario-item para ofrecer recomendaciones personalizadas a los usuarios de Steam.
 3. Trabajar con archivos JSON comprimidos proporcionados por Steam, que pueden contener datos anidados y faltantes, así como otras dificultades, que resolveremos mediante procesos de Extracción, Transformación y Carga (ETL) y Análisis Exploratorio de Datos (EDA).
 
-<img src="./_src/steam.jpg">
-
 ## API Referencias
 
 #### Consulta 1: Obtener la cantidad total de juegos vendidos y gratis por año de un desarrollador
